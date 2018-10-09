@@ -212,7 +212,8 @@ public class DoubleLinkedList<T> implements IList<T> {
          * returns 'false' otherwise.
          */
         public boolean hasNext() {
-            throw new NotYetImplementedException();
+            return current != null;
+            //throw new NotYetImplementedException();
         }
 
         /**
@@ -223,7 +224,12 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            throw new NotYetImplementedException();
+            if(!hasNext())
+                throw new NoSuchElementException();
+            T temp = current.data;
+            current = current.next;
+            return temp;
+            //throw new NotYetImplementedException();
         }
     }
 }
