@@ -26,7 +26,7 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.size = 0;
     }
     
-    //move to the target node 
+    //move to the target node
     public Node<T> moveTo(int index){
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
