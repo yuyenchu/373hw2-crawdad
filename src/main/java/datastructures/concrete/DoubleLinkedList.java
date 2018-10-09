@@ -113,22 +113,61 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T delete(int index) {
-        throw new NotYetImplementedException();
+        Node<T> temp = moveTo(index);
+        size--;
+        if(temp == back)
+            back = back.prev;
+        else
+            temp.next.prev = temp.prev;
+        if(temp == front)
+            front = front.next;
+        else
+            temp.prev.next = temp.next;
+        temp.prev = null;
+        temp.next = null;
+        return temp.data;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public int indexOf(T item) {
-        throw new NotYetImplementedException();
+        if(front == null)
+            throw new EmptyContainerException();
+        Node<T> temp = front;
+        int index = 0;
+        while(true) {
+            if(temp.data.equals(item))
+                return index;
+            if(temp.next != null) {
+                temp = temp.next;
+                index++;
+            } else {
+                return -1;
+            }
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return size;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public boolean contains(T other) {
-        throw new NotYetImplementedException();
+        if(front == null)           
+            throw new EmptyContainerException();
+        Node<T> temp = front;
+        while(true) {
+            if(temp.data.equals(other))
+                return true;
+            else if(temp.next != null) 
+                temp = temp.next;
+            else
+                return false;
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
