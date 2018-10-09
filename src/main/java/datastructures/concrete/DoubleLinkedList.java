@@ -28,23 +28,26 @@ public class DoubleLinkedList<T> implements IList<T> {
     
     //move to the target node
     private Node<T> moveTo(int index){
-        if(index < 0 || index >= size)
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
-        else if(front == null || back == null)
+        } else if (front == null || back == null) {
             throw new EmptyContainerException();
+        }
         Node<T> temp;
-        if(index < size/2) {
+        if (index < size/2) {
             temp = front;
-            for(int i = 0; i < index; i++) {
-                if(temp.next == null)
+            for (int i = 0; i < index; i++) {
+                if (temp.next == null) {
                     throw new NoSuchElementException();
+                }
                 temp = temp.next;
             }
         } else {
             temp = back;
-            for(int i = size() - 1; i < index; i--) {
-                if(temp.next == null)
+            for (int i = size() - 1; i < index; i--) {
+                if (temp.next == null) {
                     throw new NoSuchElementException();
+                }
                 temp = temp.prev;
             }
         }
@@ -55,7 +58,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     public void add(T item) {
         // Hello world
         size++;
-        if(back == null) {
+        if (back == null) {
             front = new Node<T>(item);
             back = front;
         } else {
@@ -68,16 +71,18 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T remove() {
-        if(back == null)
+        if (back == null) {
             throw new EmptyContainerException();
+        }
         size--;
         Node<T> temp = back;
         back = back.prev;
         temp.prev = null;
-        if(back == null)
+        if (back == null) {
             front = null;
-        else
+        } else {
             back.next = null;
+        }
         return temp.data;
         //throw new NotYetImplementedException();
     }
@@ -90,15 +95,18 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void set(int index, T item) {
-        Node<T> temp = moveTo(index), node = new Node<T>(item);
-        if(temp == back)
+        Node<T> temp = moveTo(index);
+        Node<T> node = new Node<T>(item);
+        if (temp == back) {
             back = node;
-        else
+        } else {
             temp.next.prev = node;
-        if(temp == front)
+        }
+        if (temp == front) {
             front = node;
-        else
+        } else {
             temp.prev.next = node;
+        }
         node.next = temp.next;
         node.prev = temp.prev;
         temp.prev = null;
@@ -115,14 +123,16 @@ public class DoubleLinkedList<T> implements IList<T> {
     public T delete(int index) {
         Node<T> temp = moveTo(index);
         size--;
-        if(temp == back)
+        if (temp == back) {
             back = back.prev;
-        else
+        } else {
             temp.next.prev = temp.prev;
-        if(temp == front)
+        }
+        if (temp == front) {
             front = front.next;
-        else
+        } else {
             temp.prev.next = temp.next;
+        }
         temp.prev = null;
         temp.next = null;
         return temp.data;
@@ -131,21 +141,21 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public int indexOf(T item) {
-        if(front == null)
+        if (front == null) {
             throw new EmptyContainerException();
+        }
         Node<T> temp = front;
         int index = 0;
-        while(true) {
-            if(temp.data.equals(item))
+        while (true) {
+            if (temp.data.equals(item)) {
                 return index;
-            if(temp.next != null) {
+            } else if (temp.next != null) {
                 temp = temp.next;
                 index++;
             } else {
                 return -1;
             }
         }
-        //throw new NotYetImplementedException();
     }
 
     @Override
@@ -156,18 +166,19 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public boolean contains(T other) {
-        if(front == null)           
+        if (front == null) {
             throw new EmptyContainerException();
-        Node<T> temp = front;
-        while(true) {
-            if(temp.data.equals(other))
-                return true;
-            else if(temp.next != null) 
-                temp = temp.next;
-            else
-                return false;
         }
-        //throw new NotYetImplementedException();
+        Node<T> temp = front;
+        while (true) {
+            if (temp.data.equals(other)) {
+                return true;
+            } else if (temp.next != null) {
+                temp = temp.next;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -224,8 +235,9 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            if(!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             T temp = current.data;
             current = current.next;
             return temp;
