@@ -28,6 +28,10 @@ public class DoubleLinkedList<T> implements IList<T> {
     
     //move to the target node
     private Node<T> moveTo(int index){
+        if(index < 0 || index >= size)
+            throw new IndexOutOfBoundsException();
+        else if(front == null || back == null)
+            throw new EmptyContainerException();
         Node<T> temp;
         if(index < size/2) {
             temp = front;
@@ -79,18 +83,27 @@ public class DoubleLinkedList<T> implements IList<T> {
     }
 
     @Override
-    public T get(int index) {
-        if(index < 0 || index >= size)
-            throw new IndexOutOfBoundsException();
-        if(front == null)
-            throw new EmptyContainerException();     
+    public T get(int index) {  
         return moveTo(index).data;
         //throw new NotYetImplementedException();
     }
 
     @Override
     public void set(int index, T item) {
-        throw new NotYetImplementedException();
+        Node<T> temp = moveTo(index), node = new Node<T>(item);
+        if(temp == back)
+            back = node;
+        else
+            temp.next.prev = node;
+        if(temp == front)
+            front = node;
+        else
+            temp.prev.next = node;
+        node.next = temp.next;
+        node.prev = temp.prev;
+        temp.prev = null;
+        temp.next = null;
+        //throw new NotYetImplementedException();
     }
 
     @Override
