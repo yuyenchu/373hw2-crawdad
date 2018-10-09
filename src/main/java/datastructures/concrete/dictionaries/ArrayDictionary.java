@@ -10,11 +10,14 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private Pair<K, V>[] pairs;
+    private int size;
 
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-        throw new UnsupportedOperationException();
+        size = 0;
+        pairs = makeArrayOfPairs(10);
+        //throw new UnsupportedOperationException();
     }
 
     /**
@@ -38,30 +41,72 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         return (Pair<K, V>[]) (new Pair[arraySize]);
 
     }
+    
+    private void expand() {
+        Pair<K, V>[] newArr = makeArrayOfPairs(size*2);
+        for (int i = 0; i < size; i++) {
+            newArr[i] = pairs[i];
+        }
+        pairs = newArr;
+    }
 
+    private int indexOf(K key) {
+        for (int i = 0; i < size; i++) {
+            if (pairs[i].key.equals(key)) {
+                return i;  
+            }
+        }
+        return -1;
+    }
+    
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
+        int i = indexOf(key);
+        if (i != -1) {
+            return pairs[i].value;  
+        }
+        return null;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+        if (size == pairs.length) {
+            expand();
+        }
+        int i = indexOf(key);
+        if (i != -1) {
+            pairs[i].value = value;
+        } else {
+            pairs[size] = new Pair<K, V>(key, value);
+            size++;
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public V remove(K key) {
-        throw new NotYetImplementedException();
+        int i = indexOf(key);
+        if (i != -1) {
+            V temp = pairs[i].value;
+            pairs[i] = pairs[size -1];
+            size--;
+            return temp;  
+        }
+        return null;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+        return indexOf(key) != -1;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return size;
+        //throw new NotYetImplementedException();
     }
 
     private static class Pair<K, V> {
