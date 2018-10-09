@@ -2,6 +2,7 @@ package datastructures.concrete;
 
 import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
+import misc.exceptions.EmptyContainerException;
 import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
@@ -49,17 +50,48 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public void add(T item) {
         // Hello world
-        throw new NotYetImplementedException();
+        size++;
+        if(back == null) {
+            front = new Node<T>(item);
+            back = front;
+        } else {
+            back.next = new Node<T>(item);
+            back.next.prev = back;
+            back = back.next;
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public T remove() {
-        throw new NotYetImplementedException();
+        if(back == null)
+            throw new EmptyContainerException();
+        size--;
+        Node<T> temp = back;
+        back = back.prev;
+        temp.prev = null;
+        if(back == null)
+            front = null;
+        else
+            back.next = null;
+        return temp.data;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public T get(int index) {
-        throw new NotYetImplementedException();
+        if(index < 0 || index >= size)
+            throw new IndexOutOfBoundsException();
+        if(front == null)
+            throw new EmptyContainerException();
+        Node<T> temp = front;
+        for(int i = 0; i < index; i++) {
+            if(temp.next == null)
+                throw new NoSuchElementException();
+            temp = temp.next;
+        }
+        return temp.data;
+        //throw new NotYetImplementedException();
     }
 
     @Override
