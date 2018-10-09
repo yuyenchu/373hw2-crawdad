@@ -27,7 +27,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     }
     
     //move to the target node
-    private Node<T> moveTo(int index){
+    public Node<T> moveTo(int index){
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         } else if (front == null || back == null) {
@@ -116,7 +116,25 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void insert(int index, T item) {
-        throw new NotYetImplementedException();
+        if (index == size) {
+            add(item);
+        } else {
+            Node<T> temp = moveTo(index);
+            Node<T> node = new Node<T>(item);
+            if (temp == front) {
+                if (front == null) {
+                    back = node;
+                }
+                front = node;
+            } else {
+                temp.prev.next = node;
+            }
+            node.next = temp;
+            node.prev = temp.prev;
+            temp.prev = node;
+            size++;
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
@@ -147,7 +165,7 @@ public class DoubleLinkedList<T> implements IList<T> {
         Node<T> temp = front;
         int index = 0;
         while (true) {
-            if (temp.data.equals(item)) {
+            if (temp.data == item || (temp.data != null && temp.data.equals(item))) {
                 return index;
             } else if (temp.next != null) {
                 temp = temp.next;
@@ -166,19 +184,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public boolean contains(T other) {
-        if (front == null) {
-            throw new EmptyContainerException();
-        }
-        Node<T> temp = front;
-        while (true) {
-            if (temp.data.equals(other)) {
-                return true;
-            } else if (temp.next != null) {
-                temp = temp.next;
-            } else {
-                return false;
-            }
-        }
+        return indexOf(other) != -1;
     }
 
     @Override
