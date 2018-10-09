@@ -2,6 +2,8 @@ package datastructures.concrete.dictionaries;
 
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NotYetImplementedException;
+import misc.exceptions.NoSuchKeyException;
+
 
 /**
  * See IDictionary for more details on what this class should do
@@ -52,7 +54,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     private int indexOf(K key) {
         for (int i = 0; i < size; i++) {
-            if (pairs[i].key.equals(key)) {
+            if (key == pairs[i].key || (key != null && pairs[i].key.equals(key))) {
                 return i;  
             }
         }
@@ -65,7 +67,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         if (i != -1) {
             return pairs[i].value;  
         }
-        return null;
+        throw new NoSuchKeyException();
         //throw new NotYetImplementedException();
     }
 
@@ -93,7 +95,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             size--;
             return temp;  
         }
-        return null;
+        throw new NoSuchKeyException();
         //throw new NotYetImplementedException();
     }
 
