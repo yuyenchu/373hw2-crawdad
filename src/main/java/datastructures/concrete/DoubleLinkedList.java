@@ -49,7 +49,6 @@ public class DoubleLinkedList<T> implements IList<T> {
     
     @Override
     public void add(T item) {
-        // Hello world
         size++;
         if(back == null) {
             front = new Node<T>(item);
@@ -59,7 +58,6 @@ public class DoubleLinkedList<T> implements IList<T> {
             back.next.prev = back;
             back = back.next;
         }
-        //throw new NotYetImplementedException();
     }
 
     @Override
@@ -75,7 +73,6 @@ public class DoubleLinkedList<T> implements IList<T> {
         else
             back.next = null;
         return temp.data;
-        //throw new NotYetImplementedException();
     }
 
     @Override
@@ -85,7 +82,6 @@ public class DoubleLinkedList<T> implements IList<T> {
         if(front == null)
             throw new EmptyContainerException();     
         return moveTo(index).data;
-        //throw new NotYetImplementedException();
     }
 
     @Override
