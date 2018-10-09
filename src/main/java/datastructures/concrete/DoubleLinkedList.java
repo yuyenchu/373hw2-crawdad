@@ -1,3 +1,4 @@
+// Hoang Nguyen and Andrew Yu
 package datastructures.concrete;
 
 //import datastructures.concrete.DoubleLinkedList.Node;
@@ -56,7 +57,6 @@ public class DoubleLinkedList<T> implements IList<T> {
     
     @Override
     public void add(T item) {
-        // Hello world
         size++;
         if (back == null) {
             front = new Node<T>(item);
@@ -66,7 +66,6 @@ public class DoubleLinkedList<T> implements IList<T> {
             back.next.prev = back;
             back = back.next;
         }
-        //throw new NotYetImplementedException();
     }
 
     @Override
@@ -84,13 +83,11 @@ public class DoubleLinkedList<T> implements IList<T> {
             back.next = null;
         }
         return temp.data;
-        //throw new NotYetImplementedException();
     }
 
     @Override
     public T get(int index) {  
         return moveTo(index).data;
-        //throw new NotYetImplementedException();
     }
 
     @Override
