@@ -1,6 +1,6 @@
 package datastructures.concrete;
 
-import datastructures.concrete.DoubleLinkedList.Node;
+//import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
 import misc.exceptions.NotYetImplementedException;
@@ -44,8 +44,8 @@ public class DoubleLinkedList<T> implements IList<T> {
             }
         } else {
             temp = back;
-            for (int i = size() - 1; i < index; i--) {
-                if (temp.next == null) {
+            for (int i = size() - 1; i > index; i--) {
+                if (temp.prev == null) {
                     throw new NoSuchElementException();
                 }
                 temp = temp.prev;
