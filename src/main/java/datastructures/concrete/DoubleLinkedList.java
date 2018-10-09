@@ -1,6 +1,8 @@
 package datastructures.concrete;
 
+import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
+import misc.exceptions.EmptyContainerException;
 import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
@@ -23,20 +25,67 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.back = null;
         this.size = 0;
     }
-
+    
+    //move to the target node
+    private Node<T> moveTo(int index){
+        Node<T> temp;
+        if(index < size/2) {
+            temp = front;
+            for(int i = 0; i < index; i++) {
+                if(temp.next == null)
+                    throw new NoSuchElementException();
+                temp = temp.next;
+            }
+        } else {
+            temp = back;
+            for(int i = size() - 1; i < index; i--) {
+                if(temp.next == null)
+                    throw new NoSuchElementException();
+                temp = temp.prev;
+            }
+        }
+        return temp;
+    }
+    
     @Override
     public void add(T item) {
-        throw new NotYetImplementedException();
+        // Hello world
+        size++;
+        if(back == null) {
+            front = new Node<T>(item);
+            back = front;
+        } else {
+            back.next = new Node<T>(item);
+            back.next.prev = back;
+            back = back.next;
+        }
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public T remove() {
-        throw new NotYetImplementedException();
+        if(back == null)
+            throw new EmptyContainerException();
+        size--;
+        Node<T> temp = back;
+        back = back.prev;
+        temp.prev = null;
+        if(back == null)
+            front = null;
+        else
+            back.next = null;
+        return temp.data;
+        //throw new NotYetImplementedException();
     }
 
     @Override
     public T get(int index) {
-        throw new NotYetImplementedException();
+        if(index < 0 || index >= size)
+            throw new IndexOutOfBoundsException();
+        if(front == null)
+            throw new EmptyContainerException();     
+        return moveTo(index).data;
+        //throw new NotYetImplementedException();
     }
 
     @Override
