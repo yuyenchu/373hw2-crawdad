@@ -26,7 +26,6 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.size = 0;
     }
     
-    //all done
     //move to the target node
     public Node<T> moveTo(int index){
         if (index < 0 || index >= size) {
