@@ -1,5 +1,6 @@
 package datastructures.concrete;
 
+import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
 import misc.exceptions.NotYetImplementedException;
 
@@ -23,7 +24,27 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.back = null;
         this.size = 0;
     }
-
+    
+    private Node<T> moveTo(int index){
+        Node<T> temp;
+        if(index < size/2) {
+            temp = front;
+            for(int i = 0; i < index; i++) {
+                if(temp.next == null)
+                    throw new NoSuchElementException();
+                temp = temp.next;
+            }
+        } else {
+            temp = back;
+            for(int i = size() - 1; i < index; i--) {
+                if(temp.next == null)
+                    throw new NoSuchElementException();
+                temp = temp.prev;
+            }
+        }
+        return temp;
+    }
+    
     @Override
     public void add(T item) {
         throw new NotYetImplementedException();
