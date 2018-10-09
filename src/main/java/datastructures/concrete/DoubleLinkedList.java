@@ -83,14 +83,8 @@ public class DoubleLinkedList<T> implements IList<T> {
         if(index < 0 || index >= size)
             throw new IndexOutOfBoundsException();
         if(front == null)
-            throw new EmptyContainerException();
-        Node<T> temp = front;
-        for(int i = 0; i < index; i++) {
-            if(temp.next == null)
-                throw new NoSuchElementException();
-            temp = temp.next;
-        }
-        return temp.data;
+            throw new EmptyContainerException();     
+        return moveTo(index).data;
         //throw new NotYetImplementedException();
     }
 
