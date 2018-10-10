@@ -1,10 +1,8 @@
-// Hoang Nguyen and Andrew Yu
 package datastructures.concrete;
 
 //import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
-import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

@@ -4,7 +4,10 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import static org.junit.Assert.assertTrue;
+import datastructures.concrete.DoubleLinkedList;
+import datastructures.interfaces.IList;
+
+import static org.junit.Assert.fail;
 
 /**
  * This class should contain all the tests you implement to verify that
@@ -21,9 +24,65 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestDeleteFunctionality extends TestDoubleLinkedList {
     @Test(timeout=SECOND)
-    public void testExample() {
-        // Feel free to modify or delete this dummy test.
-        assertTrue(true);
-        assertEquals(3, 3);
+    public void testDeleteHappyCase() {
+        IList<String> list = makeBasicList();
+        String val = list.delete(1);
+        this.assertListMatches(new String[] {"a", "c"}, list);
+        assertEquals(val, "b");
+
+        try {
+            list.delete(-1);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException ex) {
+            // Okay
+        }
+
+        try {
+            list.delete(10);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException ex) {
+            // Okay
+        }
+
+    }
+
+    @Test(timeout=SECOND)
+    public void testDeleteEmptyAndNullCase() {
+        IList<String> list = new DoubleLinkedList<String>();
+        try {
+            list.delete(0);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException ex) {
+            // Okay
+        }
+        list.add("a");
+        list.add(null);
+        list.add("c");
+        assertEquals(list.delete(1), null);
+    }
+
+    @Test(timeout=SECOND)
+    public void testDeleteEdgeCase() {
+        IList<String> list = makeBasicList();
+        list.delete(0);
+        this.assertListMatches(new String[] {"b", "c"}, list);
+        list.delete(1);
+        this.assertListMatches(new String[] {"b"}, list);
+        list.delete(0);
+        this.assertListMatches(new String[] {}, list);
+    }
+
+    public void testDeleteWithAdd() {
+        IList<String> list = new DoubleLinkedList<String>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        list.delete(0);
+        list.delete(0);
+        list.delete(0);
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        this.assertListMatches(new String[] {"d", "e", "f"}, list);
     }
 }
