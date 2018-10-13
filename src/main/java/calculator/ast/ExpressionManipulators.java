@@ -2,11 +2,12 @@ package calculator.ast;
 
 import calculator.interpreter.Environment;
 import calculator.errors.EvaluationError;
+import calculator.gui.ImageDrawer;
 import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IDictionary;
 import datastructures.interfaces.IList;
-import misc.exceptions.NoSuchKeyException;
-import misc.exceptions.NotYetImplementedException;
+//import misc.exceptions.NoSuchKeyException;
+//import misc.exceptions.NotYetImplementedException;
 
 /**
  * All of the public static methods in this class are given the exact same parameters for
@@ -76,6 +77,9 @@ public class ExpressionManipulators {
             return node.getNumericValue();
             //throw new NotYetImplementedException();
         } else if (node.isVariable()) {
+                if (!variables.containsKey(node.getName())) {
+                    throw new EvaluationError("Undeclared vaiable");
+                }
             return toDoubleHelper(variables, variables.get(node.getName()));
             //throw new NotYetImplementedException();
         } else {
@@ -116,10 +120,11 @@ public class ExpressionManipulators {
                 case "negate":
                     return -d[0];
                 case "log":
-                    if (d.length == 1)
+                    if (d.length == 1) {
                         return Math.log10(d[0]);
-                    else
+                    } else {
                         return Math.log(d[1]) / Math.log(d[0]);
+                    }
                 case "PI":
                     return Math.PI;
                 case "e":
@@ -178,7 +183,7 @@ public class ExpressionManipulators {
             boolean containOper = false;
             boolean containVar = false;
             for (AstNode oldChild : node.getChildren()) {
-                if(oldChild.isOperation()) {
+                if (oldChild.isOperation()) {
                     AstNode newChild = simplifyHelper(variables, oldChild);
                     children.add(newChild);
                     containOper = newChild.isOperation() || containOper;
@@ -187,10 +192,11 @@ public class ExpressionManipulators {
                     children.add(oldChild);
                 }
             }
-            if (!containVar && !containOper)
+            if (!containVar && !containOper) {
                 return new AstNode(toDoubleHelper(variables, node));
-            else
+            } else {
                 return new AstNode(node.getName(), children);
+            }
         } else {
             return node;
         }
@@ -236,8 +242,30 @@ public class ExpressionManipulators {
     public static AstNode plot(Environment env, AstNode node) {
         assertNodeMatches(node, "plot", 5);
 
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+        IDictionary<String, AstNode> var = env.getVariables();
+        AstNode expression = node.getChildren().get(0);
+        double varMin = toDoubleHelper(var, node.getChildren().get(2));
+        double varMax = toDoubleHelper(var, node.getChildren().get(3));
+        double step = toDoubleHelper(var, node.getChildren().get(4));
+        String name = node.getChildren().get(1).getName();
+        if (varMin > varMax) {
+            throw new EvaluationError("varMin > varMax");
+        } else if (var.containsKey(name)) {
+            throw new EvaluationError("variable was already defined");
+        } else if (step <= 0) {
+            throw new EvaluationError("step not acceptable");
+        }
+        IList<Double> x = new DoubleLinkedList<Double>();
+        IList<Double> y = new DoubleLinkedList<Double>();
+        ImageDrawer id = env.getImageDrawer();
+        for (double d = varMin; d < varMax; d += step) {
+            var.put(name, new AstNode(d));
+            x.add(d);
+            y.add(toDoubleHelper(var, expression));
+        }
+        id.drawScatterPlot("Plot", "x", "output", x, y);
+        var.remove(name);
+        //throw new NotYetImplementedException();
 
         // Note: every single function we add MUST return an
         // AST node that your "simplify" function is capable of handling.
@@ -248,6 +276,6 @@ public class ExpressionManipulators {
         //
         // When working on this method, you should uncomment the following line:
         //
-        // return new AstNode(1);
+        return expression;
     }
 }
