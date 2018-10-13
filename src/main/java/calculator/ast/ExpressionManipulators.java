@@ -64,7 +64,7 @@ public class ExpressionManipulators {
         // If you're not sure why we have a public method calling a private
         // recursive helper method, review your notes from CSE 143 (or the
         // equivalent class you took) about the 'public-private pair' pattern.
-        System.out.println("handleDouble");
+        //System.out.println("handleDouble");
         assertNodeMatches(node, "toDouble", 1);
         AstNode exprToConvert = node.getChildren().get(0);
         return new AstNode(toDoubleHelper(env.getVariables(), exprToConvert));
@@ -169,7 +169,7 @@ public class ExpressionManipulators {
         // Hint 3: When implementing your private pair, think carefully about
         //         when you should recurse. Do you recurse after simplifying
         //         the current level? Or before?
-        System.out.println("handleSimplify");
+        //System.out.println("handleSimplify");
         assertNodeMatches(node, "simplify", 1);
 
         AstNode inner = node.getChildren().get(0);
@@ -183,21 +183,20 @@ public class ExpressionManipulators {
             boolean containOper = false;
             boolean containVar = false;
             for (AstNode oldChild : node.getChildren()) {
-                if (oldChild.isOperation()) {
                     AstNode newChild = simplifyHelper(variables, oldChild);
                     children.add(newChild);
                     containOper = newChild.isOperation() || containOper;
-                } else {
-                    containVar = oldChild.isVariable() || containVar;
-                    children.add(oldChild);
-                }
+                    containVar = newChild.isVariable() || containVar;
+                
             }
-            if (!containVar && !containOper) {
+            if (!containVar && !containOper && "+-*".contains(node.getName())) {
                 return new AstNode(toDoubleHelper(variables, node));
             } else {
                 return new AstNode(node.getName(), children);
             }
-        } else {
+        } else if(node.isVariable() && variables.containsKey(node.getName())){
+            return simplifyHelper(variables, variables.get(node.getName()));
+        } else{
             return node;
         }
         //throw new NotYetImplementedException();
@@ -258,7 +257,7 @@ public class ExpressionManipulators {
         IList<Double> x = new DoubleLinkedList<Double>();
         IList<Double> y = new DoubleLinkedList<Double>();
         ImageDrawer id = env.getImageDrawer();
-        for (double d = varMin; d < varMax; d += step) {
+        for (double d = varMin; d <= varMax; d += step) {
             var.put(name, new AstNode(d));
             x.add(d);
             y.add(toDoubleHelper(var, expression));
