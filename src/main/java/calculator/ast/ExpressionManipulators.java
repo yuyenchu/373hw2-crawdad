@@ -2,7 +2,10 @@ package calculator.ast;
 
 import calculator.interpreter.Environment;
 import calculator.errors.EvaluationError;
+import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IDictionary;
+import datastructures.interfaces.IList;
+import misc.exceptions.NoSuchKeyException;
 import misc.exceptions.NotYetImplementedException;
 
 /**
@@ -60,7 +63,7 @@ public class ExpressionManipulators {
         // If you're not sure why we have a public method calling a private
         // recursive helper method, review your notes from CSE 143 (or the
         // equivalent class you took) about the 'public-private pair' pattern.
-
+        System.out.println("handleDouble");
         assertNodeMatches(node, "toDouble", 1);
         AstNode exprToConvert = node.getChildren().get(0);
         return new AstNode(toDoubleHelper(env.getVariables(), exprToConvert));
@@ -68,20 +71,64 @@ public class ExpressionManipulators {
 
     private static double toDoubleHelper(IDictionary<String, AstNode> variables, AstNode node) {
         // There are three types of nodes, so we have three cases. 
+        
         if (node.isNumber()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            return node.getNumericValue();
+            //throw new NotYetImplementedException();
         } else if (node.isVariable()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            return toDoubleHelper(variables, variables.get(node.getName()));
+            //throw new NotYetImplementedException();
         } else {
             // You may assume the expression node has the correct number of children.
             // If you wish to make your code more robust, you can also use the provided
             // "assertNodeMatches" method to verify the input is valid.
             String name = node.getName();
 
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            double[] d = new double[node.getChildren().size()];
+            for (int i = 0; i < d.length; i++) {
+                d[i] = toDoubleHelper(variables, node.getChildren().get(i));
+            }
+            switch(name) {
+                case "+":
+                    return d[0] + d[1];
+                case "-":
+                    return d[0] - d[1];
+                case "*":
+                    return d[0] * d[1];
+                case "/":  
+                    return d[0] / d[1];
+                case "^":
+                    return Math.pow(d[0], d[1]);
+                case "sin":
+                    return Math.sin(d[0]);
+                case "cos":
+                    return Math.cos(d[0]);
+                case "tan":
+                    return Math.tan(d[0]);
+                case "sinh":
+                    return Math.sinh(d[0]);
+                case "cosh":
+                    return Math.cosh(d[0]);
+                case "tanh":
+                    return Math.tanh(d[0]);
+                case "ln":
+                    return Math.log(d[0]);
+                case "negate":
+                    return -d[0];
+                case "log":
+                    if (d.length == 1)
+                        return Math.log10(d[0]);
+                    else
+                        return Math.log(d[1]) / Math.log(d[0]);
+                case "PI":
+                    return Math.PI;
+                case "e":
+                    return Math.E;
+                default:
+                    throw new EvaluationError("Unexpected operation");
+            }
+
+            //throw new NotYetImplementedException();
         }
     }
 
@@ -117,13 +164,40 @@ public class ExpressionManipulators {
         // Hint 3: When implementing your private pair, think carefully about
         //         when you should recurse. Do you recurse after simplifying
         //         the current level? Or before?
-
+        System.out.println("handleSimplify");
         assertNodeMatches(node, "simplify", 1);
 
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+        AstNode inner = node.getChildren().get(0);
+        return simplifyHelper(env.getVariables(), inner);
+        //throw new NotYetImplementedException();
     }
 
+    private static AstNode simplifyHelper(IDictionary<String, AstNode> variables, AstNode node) {
+        if (node.isOperation()) {
+            IList<AstNode> children = new DoubleLinkedList<>();
+            boolean containOper = false;
+            boolean containVar = false;
+            for (AstNode oldChild : node.getChildren()) {
+                if(oldChild.isOperation()) {
+                    AstNode newChild = simplifyHelper(variables, oldChild);
+                    children.add(newChild);
+                    containOper = newChild.isOperation() || containOper;
+                } else {
+                    containVar = oldChild.isVariable() || containVar;
+                    children.add(oldChild);
+                }
+            }
+            if (!containVar && !containOper)
+                return new AstNode(toDoubleHelper(variables, node));
+            else
+                return new AstNode(node.getName(), children);
+        } else {
+            return node;
+        }
+        //throw new NotYetImplementedException();
+    }
+    
+    
     /**
      * Accepts an Environment variable and a 'plot(exprToPlot, var, varMin, varMax, step)'
      * AstNode and generates the corresponding plot on the ImageDrawer attached to the
