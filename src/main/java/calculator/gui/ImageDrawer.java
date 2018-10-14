@@ -2,7 +2,6 @@ package calculator.gui;
 
 import datastructures.interfaces.IList;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
@@ -212,7 +211,7 @@ public class ImageDrawer implements ImageObserver {
                 yAxisLabel,
                 seriesCollection);
         chart.removeLegend();
-        XYPlot plot = (XYPlot)chart.getPlot();
+        XYPlot plot = (XYPlot) chart.getPlot();
         plot.setRenderer(new XYSplineRenderer());
 
 
@@ -220,7 +219,7 @@ public class ImageDrawer implements ImageObserver {
         Graphics2D g2 = (Graphics2D) this.getGraphics();
         g2.setBackground(Color.white);
         g2.clearRect(0, 0, this.width, this.height);
-        plot.draw(g2, drawRegion,null,null,null);
+        plot.draw(g2, drawRegion, null, null, null);
     }
 
     @Override
