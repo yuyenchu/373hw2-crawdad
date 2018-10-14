@@ -78,7 +78,7 @@ public class ExpressionManipulators {
             //throw new NotYetImplementedException();
         } else if (node.isVariable()) {
                 if (!variables.containsKey(node.getName())) {
-                    throw new EvaluationError("Undeclared vaiable");
+                    throw new EvaluationError("Undeclared vaiable: " + node.getName());
                 }
             return toDoubleHelper(variables, variables.get(node.getName()));
             //throw new NotYetImplementedException();
@@ -92,48 +92,52 @@ public class ExpressionManipulators {
             for (int i = 0; i < d.length; i++) {
                 d[i] = toDoubleHelper(variables, node.getChildren().get(i));
             }
-            switch(name) {
-                case "+":
-                    return d[0] + d[1];
-                case "-":
-                    return d[0] - d[1];
-                case "*":
-                    return d[0] * d[1];
-                case "/":  
-                    return d[0] / d[1];
-                case "^":
-                    return Math.pow(d[0], d[1]);
-                case "sin":
-                    return Math.sin(d[0]);
-                case "cos":
-                    return Math.cos(d[0]);
-                case "tan":
-                    return Math.tan(d[0]);
-                case "sinh":
-                    return Math.sinh(d[0]);
-                case "cosh":
-                    return Math.cosh(d[0]);
-                case "tanh":
-                    return Math.tanh(d[0]);
-                case "ln":
-                    return Math.log(d[0]);
-                case "negate":
-                    return -d[0];
-                case "log":
-                    if (d.length == 1) {
-                        return Math.log10(d[0]);
-                    } else {
-                        return Math.log(d[1]) / Math.log(d[0]);
-                    }
-                case "PI":
-                    return Math.PI;
-                case "e":
-                    return Math.E;
-                default:
-                    throw new EvaluationError("Unexpected operation");
-            }
+            return operations(name, d);
 
             //throw new NotYetImplementedException();
+        }
+    }
+    
+    private static double operations(String name, double[] d) {
+        switch(name) {
+            case "+":
+                return d[0] + d[1];
+            case "-":
+                return d[0] - d[1];
+            case "*":
+                return d[0] * d[1];
+            case "/":  
+                return d[0] / d[1];
+            case "^":
+                return Math.pow(d[0], d[1]);
+            case "sin":
+                return Math.sin(d[0]);
+            case "cos":
+                return Math.cos(d[0]);
+            case "tan":
+                return Math.tan(d[0]);
+            case "sinh":
+                return Math.sinh(d[0]);
+            case "cosh":
+                return Math.cosh(d[0]);
+            case "tanh":
+                return Math.tanh(d[0]);
+            case "ln":
+                return Math.log(d[0]);
+            case "negate":
+                return -d[0];
+            case "log":
+                if (d.length == 1) {
+                    return Math.log10(d[0]);
+                } else {
+                    return Math.log(d[1]) / Math.log(d[0]);
+                }
+            case "PI":
+                return Math.PI;
+            case "e":
+                return Math.E;
+            default:
+                throw new EvaluationError("Unexpected operation: " + name);
         }
     }
 
@@ -194,9 +198,9 @@ public class ExpressionManipulators {
             } else {
                 return new AstNode(node.getName(), children);
             }
-        } else if(node.isVariable() && variables.containsKey(node.getName())){
+        } else if (node.isVariable() && variables.containsKey(node.getName())) {
             return simplifyHelper(variables, variables.get(node.getName()));
-        } else{
+        } else {
             return node;
         }
         //throw new NotYetImplementedException();
@@ -250,9 +254,9 @@ public class ExpressionManipulators {
         if (varMin > varMax) {
             throw new EvaluationError("varMin > varMax");
         } else if (var.containsKey(name)) {
-            throw new EvaluationError("variable was already defined");
+            throw new EvaluationError("variable already defined: " + name);
         } else if (step <= 0) {
-            throw new EvaluationError("step not acceptable");
+            throw new EvaluationError("invalid step");
         }
         IList<Double> x = new DoubleLinkedList<Double>();
         IList<Double> y = new DoubleLinkedList<Double>();
@@ -263,7 +267,7 @@ public class ExpressionManipulators {
             y.add(toDoubleHelper(var, expression));
         }
         id.drawScatterPlot("Plot", "x", "output", x, y);
-//        id.drawSpline("Plot", "x", "output", x, y);
+        //id.drawSpline("Plot", "x", "output", x, y);
         var.remove(name);
         //throw new NotYetImplementedException();
 
