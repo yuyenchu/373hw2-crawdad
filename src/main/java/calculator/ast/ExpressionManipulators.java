@@ -263,6 +263,7 @@ public class ExpressionManipulators {
             y.add(toDoubleHelper(var, expression));
         }
         id.drawScatterPlot("Plot", "x", "output", x, y);
+//        id.drawSpline("Plot", "x", "output", x, y);
         var.remove(name);
         //throw new NotYetImplementedException();
 

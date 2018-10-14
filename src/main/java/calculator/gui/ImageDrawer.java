@@ -2,7 +2,10 @@ package calculator.gui;
 
 import datastructures.interfaces.IList;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -165,6 +168,59 @@ public class ImageDrawer implements ImageObserver {
         // We then draw this chart using the underlying Graphics object.
         Graphics2D g2 = (Graphics2D) this.getGraphics();
         chart.draw(g2, drawRegion);
+    }
+    
+    public void drawSpline(String title, String xAxisLabel, String yAxisLabel,
+            IList<Double> xValues, IList<Double> yValues) {
+        if (this.width == UNKNOWN_DIMENSION || this.height == UNKNOWN_DIMENSION) {
+            throw new IllegalStateException("Unexpected fatal error: Image width or height unknown");
+        }
+        this.drawSpline(
+                title, xAxisLabel, yAxisLabel, xValues, yValues,
+                new Rectangle2D.Double(0, 0, this.width, this.height));
+    }
+    
+    public void drawSpline(String title, String xAxisLabel, String yAxisLabel,
+            IList<Double> xValues, IList<Double> yValues,
+            Rectangle2D drawRegion) {
+        if (xValues.size() != yValues.size()) {
+            throw new IllegalArgumentException("Number of 'x' values and 'y' values are not the same.");
+        }
+        
+        Iterator<Double> xIter = xValues.iterator();
+        Iterator<Double> yIter = yValues.iterator();
+        
+        // We pair the elements together and add them to a series.
+        // We pick an arbitrary name for this series -- the user will never
+        // see it because we hide the legend anyways.
+        XYSeries series = new XYSeries("Series 1");
+        while (xIter.hasNext()) {
+            series.add(xIter.next(), yIter.next());
+        }
+        
+        // We add our series to the series collection. A SeriesCollection
+        // may contain multiple series in case we want to plot multiple
+        // datasets on the same chart. We don't do this, however.
+        XYSeriesCollection seriesCollection = new XYSeriesCollection();
+        seriesCollection.addSeries(series);
+        
+        // Finally, we create our chart. We hide the legend mostly because
+        // it's sort of pointless if we only ever plot one series at a time.
+        JFreeChart chart = ChartFactory.createScatterPlot(
+                title,
+                xAxisLabel,
+                yAxisLabel,
+                seriesCollection);
+        chart.removeLegend();
+        XYPlot plot = (XYPlot)chart.getPlot();
+        plot.setRenderer(new XYSplineRenderer());
+
+
+        // We then draw this chart using the underlying Graphics object.
+        Graphics2D g2 = (Graphics2D) this.getGraphics();
+        g2.setBackground(Color.white);
+        g2.clearRect(0, 0, this.width, this.height);
+        plot.draw(g2, drawRegion,null,null,null);
     }
 
     @Override
