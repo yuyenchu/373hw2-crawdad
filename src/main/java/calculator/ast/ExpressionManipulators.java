@@ -24,8 +24,8 @@ public class ExpressionManipulators {
      */
     private static void assertNodeMatches(AstNode node, String expectedName, int expectedNumChildren) {
         if (!node.isOperation()
-                && !node.getName().equals(expectedName)
-                && node.getChildren().size() != expectedNumChildren) {
+                || !node.getName().equals(expectedName)
+                || node.getChildren().size() != expectedNumChildren) {
             throw new EvaluationError("Node is not valid " + expectedName + " node.");
         }
     }
@@ -277,5 +277,9 @@ public class ExpressionManipulators {
         // When working on this method, you should uncomment the following line:
         //
         return expression;
+    }
+    
+    public static AstNode handleSolve(Environment env, AstNode node) {
+        return new AstNode(1);
     }
 }
