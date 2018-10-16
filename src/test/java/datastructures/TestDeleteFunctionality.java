@@ -71,7 +71,21 @@ public class TestDeleteFunctionality extends TestDoubleLinkedList {
         list.delete(0);
         this.assertListMatches(new String[] {}, list);
     }
-
+    
+    @Test(timeout=SECOND)
+    public void testDeletePrevNextLogic() {
+        IList<String> list = makeBasicList();
+        list.delete(1);
+        assertEquals(list.indexOf("b"), -1);
+        list = makeBasicList();
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        list.delete(4);
+        assertEquals(list.get(3), "d");
+    }
+    
+    @Test(timeout=SECOND)
     public void testDeleteWithAdd() {
         IList<String> list = new DoubleLinkedList<String>();
         list.add("a");
@@ -84,5 +98,12 @@ public class TestDeleteFunctionality extends TestDoubleLinkedList {
         list.add("e");
         list.add("f");
         this.assertListMatches(new String[] {"d", "e", "f"}, list);
+        list.delete(2);
+        list.delete(1);
+        list.delete(0);
+        list.add("g");
+        list.add("h");
+        list.add("i");
+        this.assertListMatches(new String[] {"g", "h", "i"}, list);
     }
 }
