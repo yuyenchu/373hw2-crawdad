@@ -2,8 +2,12 @@ package calculator.ast;
 
 import calculator.interpreter.Environment;
 import calculator.errors.EvaluationError;
+import calculator.gui.ImageDrawer;
+import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IDictionary;
-import misc.exceptions.NotYetImplementedException;
+import datastructures.interfaces.IList;
+//import misc.exceptions.NoSuchKeyException;
+//import misc.exceptions.NotYetImplementedException;
 
 /**
  * All of the public static methods in this class are given the exact same parameters for
@@ -20,8 +24,8 @@ public class ExpressionManipulators {
      */
     private static void assertNodeMatches(AstNode node, String expectedName, int expectedNumChildren) {
         if (!node.isOperation()
-                && !node.getName().equals(expectedName)
-                && node.getChildren().size() != expectedNumChildren) {
+                || !node.getName().equals(expectedName)
+                || node.getChildren().size() != expectedNumChildren) {
             throw new EvaluationError("Node is not valid " + expectedName + " node.");
         }
     }
@@ -60,7 +64,7 @@ public class ExpressionManipulators {
         // If you're not sure why we have a public method calling a private
         // recursive helper method, review your notes from CSE 143 (or the
         // equivalent class you took) about the 'public-private pair' pattern.
-
+        //System.out.println("handleDouble");
         assertNodeMatches(node, "toDouble", 1);
         AstNode exprToConvert = node.getChildren().get(0);
         return new AstNode(toDoubleHelper(env.getVariables(), exprToConvert));
@@ -68,20 +72,72 @@ public class ExpressionManipulators {
 
     private static double toDoubleHelper(IDictionary<String, AstNode> variables, AstNode node) {
         // There are three types of nodes, so we have three cases. 
+        
         if (node.isNumber()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            return node.getNumericValue();
+            //throw new NotYetImplementedException();
         } else if (node.isVariable()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+                if (!variables.containsKey(node.getName())) {
+                    throw new EvaluationError("Undeclared vaiable: " + node.getName());
+                }
+            return toDoubleHelper(variables, variables.get(node.getName()));
+            //throw new NotYetImplementedException();
         } else {
             // You may assume the expression node has the correct number of children.
             // If you wish to make your code more robust, you can also use the provided
             // "assertNodeMatches" method to verify the input is valid.
             String name = node.getName();
 
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            double[] d = new double[node.getChildren().size()];
+            for (int i = 0; i < d.length; i++) {
+                d[i] = toDoubleHelper(variables, node.getChildren().get(i));
+            }
+            return operations(name, d);
+
+            //throw new NotYetImplementedException();
+        }
+    }
+    
+    private static double operations(String name, double[] d) {
+        switch(name) {
+            case "+":
+                return d[0] + d[1];
+            case "-":
+                return d[0] - d[1];
+            case "*":
+                return d[0] * d[1];
+            case "/":  
+                return d[0] / d[1];
+            case "^":
+                return Math.pow(d[0], d[1]);
+            case "sin":
+                return Math.sin(d[0]);
+            case "cos":
+                return Math.cos(d[0]);
+            case "tan":
+                return Math.tan(d[0]);
+            case "sinh":
+                return Math.sinh(d[0]);
+            case "cosh":
+                return Math.cosh(d[0]);
+            case "tanh":
+                return Math.tanh(d[0]);
+            case "ln":
+                return Math.log(d[0]);
+            case "negate":
+                return -d[0];
+            case "log":
+                if (d.length == 1) {
+                    return Math.log10(d[0]);
+                } else {
+                    return Math.log(d[1]) / Math.log(d[0]);
+                }
+            case "PI":
+                return Math.PI;
+            case "e":
+                return Math.E;
+            default:
+                throw new EvaluationError("Unexpected operation: " + name);
         }
     }
 
@@ -117,13 +173,40 @@ public class ExpressionManipulators {
         // Hint 3: When implementing your private pair, think carefully about
         //         when you should recurse. Do you recurse after simplifying
         //         the current level? Or before?
-
+        //System.out.println("handleSimplify");
         assertNodeMatches(node, "simplify", 1);
 
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+        AstNode inner = node.getChildren().get(0);
+        return simplifyHelper(env.getVariables(), inner);
+        //throw new NotYetImplementedException();
     }
 
+    private static AstNode simplifyHelper(IDictionary<String, AstNode> variables, AstNode node) {
+        if (node.isOperation()) {
+            IList<AstNode> children = new DoubleLinkedList<>();
+            boolean containOper = false;
+            boolean containVar = false;
+            for (AstNode oldChild : node.getChildren()) {
+                    AstNode newChild = simplifyHelper(variables, oldChild);
+                    children.add(newChild);
+                    containOper = newChild.isOperation() || containOper;
+                    containVar = newChild.isVariable() || containVar;
+                
+            }
+            if (!containVar && !containOper && "+-*".contains(node.getName())) {
+                return new AstNode(toDoubleHelper(variables, node));
+            } else {
+                return new AstNode(node.getName(), children);
+            }
+        } else if (node.isVariable() && variables.containsKey(node.getName())) {
+            return simplifyHelper(variables, variables.get(node.getName()));
+        } else {
+            return node;
+        }
+        //throw new NotYetImplementedException();
+    }
+    
+    
     /**
      * Accepts an Environment variable and a 'plot(exprToPlot, var, varMin, varMax, step)'
      * AstNode and generates the corresponding plot on the ImageDrawer attached to the
@@ -162,8 +245,31 @@ public class ExpressionManipulators {
     public static AstNode plot(Environment env, AstNode node) {
         assertNodeMatches(node, "plot", 5);
 
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+        IDictionary<String, AstNode> var = env.getVariables();
+        AstNode expression = node.getChildren().get(0);
+        double varMin = toDoubleHelper(var, node.getChildren().get(2));
+        double varMax = toDoubleHelper(var, node.getChildren().get(3));
+        double step = toDoubleHelper(var, node.getChildren().get(4));
+        String name = node.getChildren().get(1).getName();
+        if (varMin > varMax) {
+            throw new EvaluationError("varMin > varMax");
+        } else if (var.containsKey(name)) {
+            throw new EvaluationError("variable already defined: " + name);
+        } else if (step <= 0) {
+            throw new EvaluationError("invalid step");
+        }
+        IList<Double> x = new DoubleLinkedList<Double>();
+        IList<Double> y = new DoubleLinkedList<Double>();
+        ImageDrawer id = env.getImageDrawer();
+        for (double d = varMin; d <= varMax; d += step) {
+            var.put(name, new AstNode(d));
+            x.add(d);
+            y.add(toDoubleHelper(var, expression));
+        }
+        id.drawScatterPlot("Plot", "x", "output", x, y);
+        //id.drawSpline("Plot", "x", "output", x, y);
+        var.remove(name);
+        //throw new NotYetImplementedException();
 
         // Note: every single function we add MUST return an
         // AST node that your "simplify" function is capable of handling.
@@ -174,6 +280,10 @@ public class ExpressionManipulators {
         //
         // When working on this method, you should uncomment the following line:
         //
-        // return new AstNode(1);
+        return expression;
+    }
+    
+    public static AstNode handleSolve(Environment env, AstNode node) {
+        return new AstNode(1);
     }
 }

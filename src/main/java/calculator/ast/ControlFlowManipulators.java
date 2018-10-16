@@ -1,7 +1,10 @@
 package calculator.ast;
 
+import calculator.errors.EvaluationError;
 import calculator.interpreter.Environment;
 import calculator.interpreter.Interpreter;
+import datastructures.concrete.DoubleLinkedList;
+import datastructures.interfaces.IList;
 import misc.exceptions.NotYetImplementedException;
 
 /**
@@ -57,7 +60,18 @@ public class ControlFlowManipulators {
      * - In either case, return the result of whatever AST node you ended up interpreting.
      */
     public static AstNode handleIf(Environment env, AstNode wrapper) {
-        throw new NotYetImplementedException();
+        //throw new NotYetImplementedException();
+        if (wrapper.getChildren().size() != 3) {
+            throw new EvaluationError("Wrong number of parameter");
+        }
+        IList<AstNode> children = new DoubleLinkedList<>();
+        children.add(wrapper.getChildren().get(0));
+        Interpreter interp = env.getInterpreter();
+        if(interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue() != 0) {
+            return interp.evaluate(env, wrapper.getChildren().get(1));
+        } else {
+            return interp.evaluate(env, wrapper.getChildren().get(2));
+        }
     }
 
     /**
@@ -75,6 +89,18 @@ public class ControlFlowManipulators {
      * - Returns the result of interpreting 'body' for the final time.
      */
     public static AstNode handleRepeat(Environment env, AstNode wrapper) {
-        throw new NotYetImplementedException();
+        //throw new NotYetImplementedException();
+        if (wrapper.getChildren().size() != 2) {
+            throw new EvaluationError("Wrong number of parameter");
+        }
+        IList<AstNode> children = new DoubleLinkedList<>();
+        children.add(wrapper.getChildren().get(0));
+        Interpreter interp = env.getInterpreter();
+        int times = (int)interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue();
+        AstNode result = wrapper.getChildren().get(1);
+        for(int i = 0; i < times; i++) {
+            interp.evaluate(env, result);
+        }
+        return result;
     }
 }
