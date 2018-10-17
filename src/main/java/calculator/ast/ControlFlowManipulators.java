@@ -103,4 +103,18 @@ public class ControlFlowManipulators {
         }
         return result;
     }
+    
+    public static AstNode handleWhile(Environment env, AstNode wrapper) {
+        if (wrapper.getChildren().size() != 2) {
+            throw new EvaluationError("Wrong number of parameter");
+        }
+        IList<AstNode> children = new DoubleLinkedList<>();
+        children.add(wrapper.getChildren().get(0));
+        Interpreter interp = env.getInterpreter();
+        AstNode result = wrapper.getChildren().get(1);
+        while ((int) interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue() != 0) {
+            interp.evaluate(env, result);
+        }
+        return result;
+    }
 }
