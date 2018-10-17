@@ -5,7 +5,7 @@ import calculator.interpreter.Environment;
 import calculator.interpreter.Interpreter;
 import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IList;
-import misc.exceptions.NotYetImplementedException;
+//import misc.exceptions.NotYetImplementedException;
 
 /**
  * Note: this file is meant for the extra credit portion of this assignment
@@ -67,7 +67,7 @@ public class ControlFlowManipulators {
         IList<AstNode> children = new DoubleLinkedList<>();
         children.add(wrapper.getChildren().get(0));
         Interpreter interp = env.getInterpreter();
-        if(interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue() != 0) {
+        if (interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue() != 0) {
             return interp.evaluate(env, wrapper.getChildren().get(1));
         } else {
             return interp.evaluate(env, wrapper.getChildren().get(2));
@@ -96,9 +96,9 @@ public class ControlFlowManipulators {
         IList<AstNode> children = new DoubleLinkedList<>();
         children.add(wrapper.getChildren().get(0));
         Interpreter interp = env.getInterpreter();
-        int times = (int)interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue();
+        int times = (int) interp.evaluate(env, new AstNode("toDouble", children)).getNumericValue();
         AstNode result = wrapper.getChildren().get(1);
-        for(int i = 0; i < times; i++) {
+        for (int i = 0; i < times; i++) {
             interp.evaluate(env, result);
         }
         return result;
