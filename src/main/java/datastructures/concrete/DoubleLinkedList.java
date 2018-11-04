@@ -1,16 +1,12 @@
 package datastructures.concrete;
 
-//import datastructures.concrete.DoubleLinkedList.Node;
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * Note: For more info on the expected behavior of your methods, see
- * the source code for IList.
- */
+
 public class DoubleLinkedList<T> implements IList<T> {
     // You may not rename these fields or change their types.
     // We will be inspecting these in our private tests.
@@ -26,7 +22,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     }
     
     //move to the target node 
-    private Node<T> moveTo(int index){
+    public Node<T> moveTo(int index){
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         } else if (front == null || back == null) {
@@ -179,6 +175,11 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public boolean contains(T other) {
+        try {
+            indexOf(other);
+        } catch(Exception e) {
+            return false;
+        }
         return indexOf(other) != -1;
     }
 
